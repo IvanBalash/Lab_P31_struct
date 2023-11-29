@@ -7,13 +7,13 @@
 using namespace std;
 
 struct MOSFET { // создаем структуру
-	int id;//id
-	int quantity;//количество
-	float max_Uce;//max напряжение сток-исток
-	float max_Ube;//max напряжение затвор-исток
-	float max_Ice;//max ток сток-исток
-	string name;//название
-	string type;//тип канала P или N
+	int id = -1;//id
+	int quantity = -1;//количество
+	float max_Uce = -1;//max напряжение сток-исток
+	float max_Ube = -1;//max напряжение затвор-исток
+	float max_Ice = -1;//max ток сток-исток
+	string name = "";//название
+	string type = "";//тип канала P или N
 };
 
 void data_write(MOSFET* data, int length) { // фунция вывода данных на экран
@@ -101,6 +101,172 @@ void save_file(MOSFET* data, int length) {
 			iname = 1;//ставим флаг неверного имени
 		}
 	}
+}
+
+void ADD(MOSFET** data, int length) {
+	string add_cmd;
+	bool icmd = 0;//флаг неверной команды
+	bool aeid = 0;//флаг неуникальности id
+	bool wc = 0;//флаг неверного значения типа канала
+	bool ival = 0;//флаг некоректного значения
+	bool id_added = 0;
+	bool name_added = 0;
+	bool type_added = 0;
+	bool Uce_added = 0;
+	bool Ube_added = 0;
+	bool Ice_added = 0;
+	bool quantity_added = 0;
+	bool all_added = 0;//флаги введенных значений
+	bool exit = 0; //флаг выхода
+	MOSFET* old_data = *data;
+	MOSFET* new_data = new MOSFET[length + 1];
+	for (size_t i = 0; i < length; i++){
+		new_data[i] = old_data[i];
+	}
+
+	while (!exit) {//цикл работы в режиме редактирования
+		system("cls");
+		cout << setw(10) << "id:" << "| " << new_data[length].id << endl
+			<< setw(10) << "name:" << "| " << new_data[length].name << endl
+			<< setw(10) << "channle:" << "| " << new_data[length].type << endl
+			<< setw(10) << "max_Uce:" << "| " << new_data[length].max_Uce << endl
+			<< setw(10) << "max_Ube:" << "| " << new_data[length].max_Ube << endl
+			<< setw(10) << "max_Ice:" << "| " << new_data[length].max_Ice << endl
+			<< setw(10) << "quantity:" << "| " << new_data[length].quantity << endl
+			<< endl;//выводим всю информацию по выбранному элементу
+		if (icmd) cout << "incorrect command" << endl;
+		if (aeid) cout << "id alredy exist" << endl;
+		if (wc) cout << "channle can be only P or N" << endl;
+		if (ival) cout << "incorrect value" << endl;
+		if (!all_added) {//выводим сообщения об ошибках
+			cout << "input all parametrs" << endl;
+		}
+		cout << "commands:" << endl;
+		cout << "\t[parametr name] x - change value of parametr to x" << endl;
+		cout << "\tEXIT - return to main menu" << endl << endl;//выводим список команд
+		cin >> add_cmd;//запрашиваем ввод команды
+		icmd = 0;
+		aeid = 0;
+		wc = 0;
+		ival = 0;//зануляем флаги после прошлой итерации
+		if (add_cmd == "id") {
+			int new_id;//переменная для нового значения
+			cin >> new_id;//считываем новое значение
+			if (new_id < 1) {//проверяем, чтобы id не был < 1
+				icmd = 1;
+				ival = 1;//выставляем флаги ошибок
+			}
+			else {
+				for (size_t i = 0; i < length; i++) {//цикл проверки уникальности id
+					if (new_data[i].id == new_id) {
+						icmd = 1;
+						aeid = 1;//выставляем флаги ошибок
+					}
+				}
+				if (!icmd) {//если ошибок нет присваеваем новое значение
+					new_data[length].id = new_id;
+					id_added = 1;
+				}
+			}
+
+		}
+
+		else if (add_cmd == "name") {
+			string new_name;//переменная для нового значения
+			cin >> new_name;//считываем новое значение
+			new_data[length].name = new_name;//присваеваем новое значение
+			name_added = 1;
+		}
+
+		else if (add_cmd == "channle") {
+			string new_channle;//переменная для нового значения
+			cin >> new_channle;//считываем новое значение
+			if (new_channle == "N" || new_channle == "P") {//проверям коректность введенного значения
+				new_data[length].type = new_channle;//присваеваем новое значение
+				type_added = 1;
+			}
+			else {
+				icmd = 1;
+				wc = 1;//выставляем флаги ошибок
+			}
+
+		}
+
+		else if (add_cmd == "max_Uce") {
+			float new_max_Uce;//переменная для нового значения
+			cin >> new_max_Uce;//считываем новое значение
+			if (new_max_Uce < 0) {//проверям коректность введенного значения
+				icmd = 1;
+				ival = 1;//выставляем флаги ошибок
+			}
+			else {
+				new_data[length].max_Uce = new_max_Uce;//присваеваем новое значение
+				Uce_added = 1;
+			}
+
+		}
+
+		else if (add_cmd == "max_Ube") {
+			float new_max_Ube;//переменная для нового значения
+			cin >> new_max_Ube;//считываем новое значение
+			if (new_max_Ube < 0) {//проверям коректность введенного значения
+				icmd = 1;
+				ival = 1;//выставляем флаги ошибок
+			}
+			else {
+				new_data[length].max_Ube = new_max_Ube;//присваеваем новое значение
+				Ube_added = 1;
+			}
+		}
+
+		else if (add_cmd == "max_Ice") {
+			float new_max_Ice;//переменная для нового значения
+			cin >> new_max_Ice;//считываем новое значение
+			if (new_max_Ice < 0) {//проверям коректность введенного значения
+				icmd = 1;
+				ival = 1;//выставляем флаги ошибок
+			}
+			else {
+				new_data[length].max_Ice = new_max_Ice;//присваеваем новое значение
+				Ice_added = 1;
+			}
+		}
+
+		else if (add_cmd == "quantity") {
+			float new_quantity;//переменная для нового значения
+			cin >> new_quantity;//считываем новое значение
+			if (new_quantity < 0) {//проверям коректность введенного значения
+				icmd = 1;
+				ival = 1;//выставляем флаги ошибок
+			}
+			else {
+				new_data[length].quantity = new_quantity;//присваеваем новое значение
+				quantity_added = 1;
+			}
+		}
+
+		else if (add_cmd == "EXIT") {
+			if (all_added) {//проверяем все ли значения введены
+				exit = 1;
+			}
+			else {
+				icmd = 1;
+			}
+		}
+
+		else {
+			
+			icmd = 1;//выставляем флаг ошибки при неверной команде
+		}
+
+		if ((id_added && name_added && type_added && quantity_added
+			&& Uce_added && Ube_added && Ice_added)) {//проверяем, что все элементы добавлены
+			all_added = 1;//ставим флаг
+		}
+	}
+	*data = new_data;
+	delete[](old_data);
+	system("cls");
 }
 
 void PUT(MOSFET** data, int line, int take_quantity) {
@@ -267,13 +433,10 @@ int main() {
 	bool nq = 0;
 	bool bq = 0;// флаг неверной команды
 	bool is_saved = 0;//флаг успешного сохранения
+	bool is_added = 0;//флаг успешного добавления
 	MOSFET* data = new MOSFET[1];// создаем масив данных
 	while (cmd != "STOP") {//основной цикл программы, который будет работать пока мы не введем команду STOP
 		if (cmd == "READ") {// если введина команда READ четем файл
-			icmd = 0;
-			nl = 0;
-			nq = 0;
-			bq = 0;
 			cout << "input the file name: ";
 			cin  >> in_file_name;// просим ввести имя файла для чтения
 			if (read_file(in_file_name,&data, &length)) {// читаем файл и проверям получилось ли его открыть
@@ -293,6 +456,7 @@ int main() {
 			cout << "commands:" << endl;
 			cout << "\tREAD - read a new file" << endl;
 			cout << "\tSAVE - save data to file" << endl;
+			cout << "\tADD - add new record" << endl;
 			cout << "\tPUT x y - put y number to x transistors" << endl;
 			cout << "\tTAKE x y - take y number of x transistors" << endl;
 			cout << "\tEDIT x - edit record number x" << endl;
@@ -314,6 +478,9 @@ int main() {
 			if (is_saved) {
 				cout << "successfuly saved" << endl;//сообщение об успешном сохранении
 			}
+			if (is_added) {
+				cout << "successfuly added" << endl;//сообщение об успешном сохранении
+			}
 			cout << "command: ";
 			cin >> cmd;//просим ввести команду
 			system("cls");//отчищаем экран
@@ -321,11 +488,18 @@ int main() {
 			nl = 0;
 			nq = 0;
 			is_saved = 0;
+			is_added = 0;
 			bq = 0;//зануляем флаги после прошлой итерации
 
 			if (cmd == "SAVE") {
 				save_file(data, length);//вызываем функцию обработчик задачи
 				is_saved = 1;//выставляем флаг успешного сохранения
+			}
+
+			else if (cmd == "ADD") {
+				ADD(&data, length);
+				length++;
+				is_added = 1;
 			}
 
 			else if (cmd == "PUT") {
