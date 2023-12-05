@@ -269,36 +269,34 @@ void ADD(MOSFET** data, int length) {
 	system("cls");
 }
 
-void PUT(MOSFET** data, int line, int take_quantity) {
-	MOSFET* new_data = *data;
-	new_data[line].quantity += take_quantity;//прибавляем значения к количеству в нужном элементе
+void PUT(MOSFET* data, int line, int take_quantity) {
+	data[line].quantity += take_quantity;//прибавляем значения к количеству в нужном элементе
 }
 
-bool TAKE(MOSFET** data, int line, int take_quantity) {
-	MOSFET* new_data = *data;
-	if ((new_data[line].quantity - take_quantity) < 0) {//проверям, чтобы не забрать больше чем есть
+bool TAKE(MOSFET* data, int line, int take_quantity) {
+	
+	if ((data[line].quantity - take_quantity) < 0) {//проверям, чтобы не забрать больше чем есть
 		return 0;
 	}
-	new_data[line].quantity -= take_quantity;//отнимаем значения к количеству в нужном элементе
+	data[line].quantity -= take_quantity;//отнимаем значения к количеству в нужном элементе
 	return 1;
 }
 
-void EDIT(MOSFET** data, int line, int length) {
+void EDIT(MOSFET* data, int line, int length) {
 	string edit_cmd;//переменная команд
 	bool icmd = 0;//флаг неверной команды
 	bool aeid = 0;//флаг неуникальности id
 	bool wc = 0;//флаг неверного значения типа канала
 	bool ival = 0;//флаг некоректного значения
-	MOSFET* new_data = *data;//переменная для работы с масивом
 	while (edit_cmd != "EXIT") {//цикл работы в режиме редактирования
 		system("cls");
-		cout << setw(10) << "id:" << "| " << new_data[line].id << endl
-			<< setw(10) << "name:" << "| " << new_data[line].name << endl
-			<< setw(10) << "channle:" << "| " << new_data[line].type << endl
-			<< setw(10) << "max_Uce:" << "| " << new_data[line].max_Uce << endl
-			<< setw(10) << "max_Ube:" << "| " << new_data[line].max_Ube << endl
-			<< setw(10) << "max_Ice:" << "| " << new_data[line].max_Ice << endl
-			<< setw(10) << "quantity:" << "| " << new_data[line].quantity << endl
+		cout << setw(10) << "id:" << "| " << data[line].id << endl
+			<< setw(10) << "name:" << "| " <<data[line].name << endl
+			<< setw(10) << "channle:" << "| " << data[line].type << endl
+			<< setw(10) << "max_Uce:" << "| " << data[line].max_Uce << endl
+			<< setw(10) << "max_Ube:" << "| " << data[line].max_Ube << endl
+			<< setw(10) << "max_Ice:" << "| " << data[line].max_Ice << endl
+			<< setw(10) << "quantity:" << "| " << data[line].quantity << endl
 			<< endl;//выводим всю информацию по выбранному элементу
 		if (icmd) cout << "incorrect command" << endl;
 		if (aeid) cout << "id alredy exist" << endl;
@@ -321,13 +319,13 @@ void EDIT(MOSFET** data, int line, int length) {
 			}
 			else {
 				for (size_t i = 0; i < length; i++){//цикл проверки уникальности id
-					if (new_data[i].id == new_id) {
+					if (data[i].id == new_id) {
 						icmd = 1;
 						aeid = 1;//выставляем флаги ошибок
 					}
 				}
 				if (!icmd) {//если ошибок нет присваеваем новое значение
-					new_data[line].id = new_id;
+					data[line].id = new_id;
 				}
 			}
 			
@@ -336,14 +334,14 @@ void EDIT(MOSFET** data, int line, int length) {
 		else if (edit_cmd == "name") {
 			string new_name;//переменная для нового значения
 			cin >> new_name;//считываем новое значение
-			new_data[line].name = new_name;//присваеваем новое значение
+			data[line].name = new_name;//присваеваем новое значение
 		}
 
 		else if (edit_cmd == "channle") {
 			string new_channle;//переменная для нового значения
 			cin >> new_channle;//считываем новое значение
 			if (new_channle == "N" || new_channle == "P") {//проверям коректность введенного значения
-				new_data[line].type = new_channle;//присваеваем новое значение
+				data[line].type = new_channle;//присваеваем новое значение
 			}
 			else {
 				icmd = 1;
@@ -360,7 +358,7 @@ void EDIT(MOSFET** data, int line, int length) {
 				ival = 1;//выставляем флаги ошибок
 			}
 			else {
-				new_data[line].max_Uce = new_max_Uce;//присваеваем новое значение
+				data[line].max_Uce = new_max_Uce;//присваеваем новое значение
 			}
 
 		}
@@ -373,7 +371,7 @@ void EDIT(MOSFET** data, int line, int length) {
 				ival = 1;//выставляем флаги ошибок
 			}
 			else {
-				new_data[line].max_Ube = new_max_Ube;//присваеваем новое значение
+				data[line].max_Ube = new_max_Ube;//присваеваем новое значение
 			}
 		}
 
@@ -385,7 +383,7 @@ void EDIT(MOSFET** data, int line, int length) {
 				ival = 1;//выставляем флаги ошибок
 			}
 			else {
-				new_data[line].max_Ice = new_max_Ice;//присваеваем новое значение
+				data[line].max_Ice = new_max_Ice;//присваеваем новое значение
 			}
 		}
 
@@ -397,7 +395,7 @@ void EDIT(MOSFET** data, int line, int length) {
 				ival = 1;//выставляем флаги ошибок
 			}
 			else {
-				new_data[line].quantity = new_quantity;//присваеваем новое значение
+				data[line].quantity = new_quantity;//присваеваем новое значение
 			}
 		}
 
@@ -517,7 +515,7 @@ int main() {
 						nq = 1;//выставляем флаги ошибок
 					}
 					else {
-						PUT(&data, line, quantity);//вызываем функцию обработчик задачи
+						PUT(data, line, quantity);//вызываем функцию обработчик задачи
 					}
 				}
 			}
@@ -537,7 +535,7 @@ int main() {
 						nq = 1;//выставляем флаги ошибок
 					}
 					else {
-						if (!TAKE(&data, line, quantity)) {//вызываем функцию обработчик задачи, проверяя возвращаемое значение
+						if (!TAKE(data, line, quantity)) {//вызываем функцию обработчик задачи, проверяя возвращаемое значение
 							icmd = 1;
 							bq = 1;//выставляем флаги ошибок, если функция вернула false
 						}
@@ -555,7 +553,7 @@ int main() {
 				}
 				else {
 					line--;//дикриментируем line, чтобы проще работать с масивом
-					EDIT(&data, line, length);//вызываем функцию обработчик задачи
+					EDIT(data, line, length);//вызываем функцию обработчик задачи
 				}	
 			}	
 
